@@ -1,6 +1,7 @@
 import styled from "styled-components";
-//Farmer Motion 사용하여 애니매이션을 만드는 법을 배워보자
-//React JS 용 라이브러리다.
+import { motion } from "framer-motion";
+
+// npm install framer-motion
 
 const Wrapper = styled.div`
     height: 100vh;
@@ -22,6 +23,8 @@ export default function App() {
     return (
         <Wrapper>
             <Box />
+            {/* 뭐든 animate 하길 원한다면 motion패키지로부터 나와야 한다 */}
+            <motion.div></motion.div>
         </Wrapper>
     );
 }
