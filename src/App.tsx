@@ -1,20 +1,12 @@
 import styled from "styled-components";
-import { motion } from "framer-motion";
-import { useRef } from "react";
-//constraint(제약) 쓰기! ex)좌표 내에서만 드래그 되도록
+import { motion, useMotionValue } from "framer-motion";
+import { useEffect } from "react";
+
+// MotionValue
+
 const Wrapper = styled.div`
     height: 100vh;
     width: 100vw;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-`;
-
-const BiggerBox = styled.div`
-    width: 600px;
-    height: 600px;
-    background-color: rgba(255, 255, 255, 0.2);
-    border-radius: 40px;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -31,21 +23,19 @@ const Box = styled(motion.div)`
     box-shadow: 0 2px 3px rgba(0, 0, 0, 0.1), 0 10px 20px rgba(0, 0, 0, 0.06);
 `;
 
-const boxVariants = {
-    hover: { scale: 1.5, rotateZ: 90 },
-    click: { scale: 1, borderRadius: "100px" },
-    drag: { backgroundColor: "#fdcb6e", transition: { duration: 10 } },
-};
-
 export default function App() {
-    const biggerBoxRef = useRef<HTMLDivElement>(null);
+    const x = useMotionValue(0);
+    // useEffect를 이용하면 x 값을 알 수 있다.
+    useEffect(() => {
+        x.onChange(() => console.log(x.get()));
+    }, [x]);
+    //const x 기 업데이트 되니 계속 console.log가 찍힌다.
     return (
         <Wrapper>
-            <BiggerBox ref={biggerBoxRef}>
-                <Box drag dragElastic={0.3} dragSnapToOrigin dragConstraints={biggerBoxRef} variants={boxVariants} whileHover={"hover"} whileDrag="drag" whileTap="click" />
-                {/* drag만 쓰면 어느 방향으로나 drag할 수 있다는 뜻이다. dragConstraints를 이용하여 top right bottom left를 제한하자.*/}
-                {/* 숫자를 일일히 계산하는 것은 귀찮다. Ref를 사용하자 */}
-            </BiggerBox>
+            <button onClick={() => x.set(200)}>Click Me</button>
+            {/* 이런 식으로 x 값을 조절할 수 있기도 하다. */}
+            <Box style={{ x }} drag="x" dragSnapToOrigin />
+            {/* x의 좌표가 바뀔 때 마다 style도 바뀔 것이다. 하지만 motionValue 바뀌어도 재렌더링 되지 않는다.*/}
         </Wrapper>
     );
 }
