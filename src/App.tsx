@@ -1,8 +1,8 @@
 import styled from "styled-components";
-import { motion, useMotionValue } from "framer-motion";
+import { motion, useMotionValue, useTransform } from "framer-motion";
 import { useEffect } from "react";
 
-// MotionValue
+// 사각형을 x 축에서 드래그하면서 커지고 작아지도록 하기, useTransform 이용
 
 const Wrapper = styled.div`
     height: 100vh;
@@ -25,17 +25,16 @@ const Box = styled(motion.div)`
 
 export default function App() {
     const x = useMotionValue(0);
-    // useEffect를 이용하면 x 값을 알 수 있다.
+    const potato = useTransform(x, [-800, 0, 800], [2, 1, 2]);
+    //인자를 3개로 받는데, x 가 -800이면 2를 얻고, x 가 0 이면 1 을 얻는다 ...
+    // 따라서 입력값들과 출력값들의 수가 같아야 한다.
     useEffect(() => {
-        x.onChange(() => console.log(x.get()));
+        potato.onChange(() => console.log(potato.get()));
     }, [x]);
-    //const x 기 업데이트 되니 계속 console.log가 찍힌다.
     return (
         <Wrapper>
-            <button onClick={() => x.set(200)}>Click Me</button>
-            {/* 이런 식으로 x 값을 조절할 수 있기도 하다. */}
-            <Box style={{ x }} drag="x" dragSnapToOrigin />
-            {/* x의 좌표가 바뀔 때 마다 style도 바뀔 것이다. 하지만 motionValue 바뀌어도 재렌더링 되지 않는다.*/}
+            <Box style={{ x, scale: potato }} drag="x" dragSnapToOrigin />
+            {/* scale 값과 potato를 연결하여 크기를 변경하자 */}
         </Wrapper>
     );
 }
