@@ -1,15 +1,16 @@
 import styled from "styled-components";
-import { motion, useMotionValue, useTransform } from "framer-motion";
+import { motion, useMotionValue, useTransform, useViewportScroll } from "framer-motion";
 import { useEffect } from "react";
 
-// 사각형을 x 축에서 드래그하면서 커지고 작아지도록 하기, useTransform 이용
+// 어떤것을 또 transform 할 수 있는지 알아보자, 숫자뿐만 아니라 색깔도 transform 할 수 있다.
 
-const Wrapper = styled.div`
-    height: 100vh;
+const Wrapper = styled(motion.div)`
+    height: 200vh;
     width: 100vw;
     display: flex;
     justify-content: center;
     align-items: center;
+    background: linear-gradient(135deg, rgb(238, 0, 153), rgb(221, 0, 253));
 `;
 
 const Box = styled(motion.div)`
@@ -25,16 +26,18 @@ const Box = styled(motion.div)`
 
 export default function App() {
     const x = useMotionValue(0);
-    const potato = useTransform(x, [-800, 0, 800], [2, 1, 2]);
-    //인자를 3개로 받는데, x 가 -800이면 2를 얻고, x 가 0 이면 1 을 얻는다 ...
-    // 따라서 입력값들과 출력값들의 수가 같아야 한다.
-    useEffect(() => {
-        potato.onChange(() => console.log(potato.get()));
-    }, [x]);
+    const rotateZ = useTransform(x, [-800, 800], [-360, 360]);
+    const gradient = useTransform(
+        x,
+        [-800, 0, 800],
+        ["linear-gradient(135deg, rgb(0, 63, 238), rgb(38, 142, 226)", "linear-gradient(135deg, rgb(238, 0, 153), rgb(221, 0, 253)", "linear-gradient(135deg, rgb(41, 238, 117), rgb(249, 253, 0)"]
+    );
+    const { scrollYProgress } = useViewportScroll();
+    const scale = useTransform(scrollYProgress, [0, 1], [1, 5]);
+
     return (
-        <Wrapper>
-            <Box style={{ x, scale: potato }} drag="x" dragSnapToOrigin />
-            {/* scale 값과 potato를 연결하여 크기를 변경하자 */}
+        <Wrapper style={{ background: gradient }}>
+            <Box style={{ x, rotateZ, scale }} drag="x" dragSnapToOrigin />
         </Wrapper>
     );
 }
