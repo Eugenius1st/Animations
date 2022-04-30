@@ -2,8 +2,6 @@ import styled from 'styled-components';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useState } from 'react';
 
-//Box 들을 클릭하면 중앙 정렬되도록 하고 animate도 적용되도록 한다.
-
 const Wrapper = styled(motion.div)`
   height: 100vh;
   width: 100vw;
@@ -33,7 +31,6 @@ const Box = styled(motion.div)`
 `;
 
 const Overlay = styled(motion.div)`
-  // 오버레이 되었을때 배경을 흐리게 해주는 효과
   width: 100%;
   height: 100%;
   position: absolute;
@@ -43,32 +40,30 @@ const Overlay = styled(motion.div)`
 `;
 
 export default function App() {
-  //클릭된 요소를 position absoulte 된 element 상태로 만들어줘야 한다.
-  const [clicked, setClicked] = useState(false);
-  const toggle = () => setClicked((prev) => !prev);
+  const [id, setId] = useState<null | string>(null);
+  console.log(id);
+  //클릭된 box에 해당하는 state가 출력된다
   return (
-    <Wrapper onClick={toggle}>
+    <Wrapper>
       <Grid>
-        <Box layoutId="hello" />
-        <Box />
-        <Box />
-        <Box />
+        {['1', '2', '3', '4'].map((n) => (
+          <Box onClick={() => setId(n)} key={n} layoutId={n} />
+          //n에 따라 state를 변경한다.
+        ))}
       </Grid>
       <AnimatePresence>
-        {clicked ? (
+        {id ? (
           <Overlay
+            onClick={() => setId(null)}
+            //바깥을 클릭하면 id 상태를 null로 다시 만들어준다
             initial={{ backgroundColor: 'rgba(0, 0, 0, 0)' }}
             animate={{ backgroundColor: 'rgba(0, 0, 0, 0.8)' }}
             exit={{ backgroundColor: 'rgba(0, 0, 0, 0)' }}
           >
-            <Box layoutId="hello" style={{ width: 500, height: 250 }} />
-            {/* 같은 layout아이디를 가지고 있으므로 애니매이션이 달라진다
-            Box 의 가장 위에서 Overlay의 중앙으로 갈 것이다.  
-            이 모든 것은 layoutId 덕분에 멋진 motion을 가질 수 있게 된 것이다.*/}
+            <Box layoutId={id} style={{ width: 500, height: 250 }} />
           </Overlay>
         ) : null}
       </AnimatePresence>
-      {/* animate될 div 이므로 (motion.div)로 Overlay를 바꿔주어야 한다. */}
     </Wrapper>
   );
 }
