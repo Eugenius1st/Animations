@@ -29,6 +29,7 @@ const Box = styled(motion.div)`
 
 const box = {
     entry: (isBack: boolean) => ({
+        //return하고 싶은 것을 괄호로 싼다.
         x: isBack ? -500 : 500,
         opacity: 0,
         scale: 0,
@@ -36,6 +37,7 @@ const box = {
     center: { x: 0, opacity: 1, scale: 1, transition: { duration: 1 } },
     exit: (isBack: boolean) => ({
         x: isBack ? 500 : -500,
+        //next 와 prev는 모두 이 위에서 계산된다.
         opacity: 0,
         scale: 0,
         transition: { duration: 0.2 },
@@ -45,13 +47,20 @@ const box = {
 export default function App() {
     const [visible, setVisible] = useState(1);
     const [back, setBack] = useState(false);
-    const nextPlease = () => setBack(false);
-    setVisible((prev) => (prev === 10 ? 10 : prev + 1));
-    const prevPlease = () => setBack(true);
-    setVisible((prev) => (prev === 1 ? 1 : prev - 1));
+    const nextPlease = () => {
+        setBack(false);
+        //custom 을 이용해 back이라는 useState 값에 의존하여 entry와 exit를 바꿀 수 있다.
+        setVisible((prev) => (prev === 10 ? 10 : prev + 1));
+    };
+    const prevPlease = () => {
+        setBack(true);
+        //custom 을 이용해 back이라는 useState 값에 의존하여 entry와 exit를 바꿀 수 있다.
+        setVisible((prev) => (prev === 1 ? 1 : prev - 1));
+    };
     return (
         <Wrapper>
             <AnimatePresence exitBeforeEnter custom={back}>
+                {/* exitBeforeEnter는 exit를 실행시키고 exit가 끝나면 다음의 element들이 나오도록 하는 효과이다. */}
                 <Box custom={back} variants={box} initial="entry" animate="center" exit="exit" key={visible}>
                     {visible}
                 </Box>
